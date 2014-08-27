@@ -57,10 +57,16 @@ void loop(){
   digitalWrite(MR_pin, LOW);
   digitalWrite(MR_pin, HIGH);
   
-  // DO some magic
-  
-  writeShift();
-  delay(500);
+  for(int i = 27; i < 32; i++){
+    shiftRegValues[i] = HIGH;
+    for(int j = 0; j < 27; j++){
+     shiftRegValues[j] = HIGH;
+       writeShift();
+       delay(500);
+     shiftRegValues[j] = LOW;
+   } 
+   shiftRegValues[i] = LOW;
+  }
 
 }
 
