@@ -29,9 +29,9 @@ void writeToShift(){
 }
 
 /*
-  Sets one LED with the given stage/ level and column on for a given time(wait)
+  Sets one LED with the given stage/ level and column to the given status 
 */
-void writeLED(int stage, int column, int wait){
+void writeLED(int stage, int column, bool statusValue){
 #ifdef DEBUG
     Serial.println("writeLED");
     Serial.print("column Value ");
@@ -42,14 +42,10 @@ void writeLED(int stage, int column, int wait){
     Serial.println(wait);
 #endif
 
-  shiftValues[column] = HIGH;
-  shiftValues[stage] = HIGH;
+  shiftValues[column] = statusValue;
+  shiftValues[stage] = statusValue;
 
   writeToShift();
-  delay(wait);
-
-  shiftValues[column] = LOW;
-  shiftValues[stage] = LOW;
 }
 
 /*
@@ -66,4 +62,8 @@ void resetLEDs(){
   }
   lastColumn = -1;
   lastLevel = 27;
+
+  for(int i=0; i<5; i++){
+    memmove(ledMatrix[i],allOffLeds[i],32);
+  }
 }

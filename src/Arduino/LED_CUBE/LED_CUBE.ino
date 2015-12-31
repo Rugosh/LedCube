@@ -15,7 +15,7 @@ const int MR_pin = 7;
  */
 void setup(){
   // initialize serial:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(DS_pin, OUTPUT);
   pinMode(STCP_pin, OUTPUT);
@@ -43,7 +43,7 @@ boolean shiftValues[32];
 /*
   Run mode of the LED Cube
 */
-char volatile mode = 'H';
+char volatile mode = '1';
 
 /*
   Main LOOP
@@ -51,13 +51,15 @@ char volatile mode = 'H';
 void loop(){  
   if (mode == 'H'){
     mode_info();
-  } else if (mode == 'T'){
+  } else if (mode == '0'){
     mode_loop_over(250);
-  } else if(mode == 'R'){
-    mode_random();
-  } else if(mode == 'A'){
+  } else if(mode == '1'){
+    mode_random();} 
+  else if(mode == '2'){
+    mode_random_flip();
+  } else if(mode == '3'){
     light_all(0);
-  } else if(mode == 'L'){
+  } else if(mode == '4'){
     light_all(250);
   }
 }
@@ -86,7 +88,7 @@ void serialEvent(){
   Checks if the given value is an allowed mode key
 */
 boolean isMode(char value){
- return (value == 'H' || value == 'T' || value == 'R' || value == 'A' || value == 'L'); 
+ return (value == 'H' || value == '0' || value == '1' || value == '2' ||value == '3' || value == '4'); 
 }
 
 
