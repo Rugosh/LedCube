@@ -1,91 +1,52 @@
-boolean ledMatrix[5][32] = {
+/*
+  Pin Settings
+ */
+const int DS_pin = 4; // D2
+const int STCP_pin = 2; // D4
+const int SHCP_pin = 0; // D3
+const int MR_pin = 5; // D1
+
+/*
+  Stores the Values of the registers
+ */
+bool shiftValues[32];
+
+/*
+  Run mode of the LED Cube
+*/
+char volatile mode = '2';
+
+bool ledMatrix[5][32] = {
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH}};
 
-boolean allOffLeds[5][32] = {
+bool allOffLeds[5][32] = {
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH}};
 
-boolean allOnLeds[5][32] = {
+bool allOnLeds[5][32] = {
   {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,LOW,LOW,HIGH,LOW,LOW,LOW,LOW},
   {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,LOW,LOW,LOW,HIGH,LOW,LOW,LOW},
   {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,LOW,LOW,LOW,LOW,HIGH,LOW,LOW},
   {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,LOW,LOW,LOW,LOW,LOW,HIGH,LOW},
   {HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,HIGH,LOW,LOW,LOW,LOW,LOW,LOW,HIGH}};
 
-void mode_info(){
-  Serial.println("Welcome to LED CUBE Control");
-  Serial.println("The following commands are supported:");
-  Serial.println("H - Information and help");
-  Serial.println("0 - test all LEDs via loop over all of them");
-  Serial.println("1 - random LED blinking with random delay time");
-  Serial.println("2 - random LED flip in status with random delay time");
-  Serial.println("3 - light all LED");
-  Serial.println("4 - light up all levels with an short delay between each level");
-  
-  mode = 'X';
-}
-
 int lastColumn = -1;
 int lastLevel = 27;
 
-void mode_loop_over(int delayValue){
-  if(lastColumn == 24){
-    lastColumn = 0;
-    if(lastLevel == 31){
-      lastLevel = 27;
-    } else {
-      lastLevel++;
-    }
-  } else {
-     lastColumn++;
-  }
-  
-  // at this point current values := last values
-  writeLED(lastLevel, lastColumn, LOW);
-  delay(delayValue);
-  writeLED(lastLevel, lastColumn, HIGH);
-}
-
-void mode_random(){
-  int row = random(27,32);
-  int cloumn = random(24);
-  writeLED(row, cloumn, LOW);
-  delay(random(500, 5000));
-  writeLED(row, cloumn, HIGH);
-}
-
-void mode_random_flip(){
-  int row = random(4);
-  int cloumn = random(24);
-  ledMatrix[row][cloumn] = !ledMatrix[row][cloumn];
-  showMatrixForTime(random(500, 5000));
-}
-
-void showMatrixForTime(int timeInMilli){
-#ifdef DEBUG
-  Serial.println(timeInMilli);
-#endif
-  unsigned long currentMillis = millis();
-  while(millis() <= currentMillis + timeInMilli){
-    for(int i=0; i<5; i++){
-      memmove(shiftValues,ledMatrix[i],32);
-      writeToShift();
-      delay(1);
-    }
-  }
-}
-  
-void light_all(int delayBetweenStages){
-  for(int i=0; i<5; i++){
-    memmove(shiftValues,allOnLeds[i],32);
-    writeToShift();
-    delay(delayBetweenStages);
-  }
-}
+void writeToShift();
+void writeLED(int stage, int column, bool statusValue);
+void resetLEDs();
+void mode_info();
+void mode_loop_over(int delayValue);
+void mode_random();
+void mode_random_flip();
+void showMatrixForTime(int timeInMilli);
+void light_all(int delayBetweenStages);
+bool isMode(char value);
