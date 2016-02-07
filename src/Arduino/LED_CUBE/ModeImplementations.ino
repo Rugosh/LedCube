@@ -1,5 +1,3 @@
-long const clockLoopsPerMilli = 16777; 
-
 boolean ledMatrix[5][32] = {
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW,LOW},
   {LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW},
@@ -50,17 +48,17 @@ void mode_loop_over(int delayValue){
   }
   
   // at this point current values := last values
-  writeLED(lastLevel, lastColumn, HIGH);
-  delay(delayValue);
   writeLED(lastLevel, lastColumn, LOW);
+  delay(delayValue);
+  writeLED(lastLevel, lastColumn, HIGH);
 }
 
 void mode_random(){
   int row = random(27,32);
   int cloumn = random(24);
-  writeLED(row, cloumn, HIGH);
-  delay(random(500, 5000));
   writeLED(row, cloumn, LOW);
+  delay(random(500, 5000));
+  writeLED(row, cloumn, HIGH);
 }
 
 void mode_random_flip(){
@@ -71,12 +69,15 @@ void mode_random_flip(){
 }
 
 void showMatrixForTime(int timeInMilli){
+#ifdef DEBUG
   Serial.println(timeInMilli);
-  long clockToWait = clockLoopsPerMilli*timeInMilli/25000;
-  for(int c=0; c<clockToWait; c++){
+#endif
+  unsigned long currentMillis = millis();
+  while(millis() <= currentMillis + timeInMilli){
     for(int i=0; i<5; i++){
       memmove(shiftValues,ledMatrix[i],32);
       writeToShift();
+      delay(1);
     }
   }
 }

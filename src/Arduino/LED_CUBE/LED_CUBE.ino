@@ -4,11 +4,10 @@
 /*
   Pin Settings
  */
-const int DS_pin = 8;
-const int STCP_pin = 9;
-const int SHCP_pin = 10;
-const int MR_pin = 7;
-
+const int DS_pin = 4; // D2
+const int STCP_pin = 2; // D4
+const int SHCP_pin = 0; // D3
+const int MR_pin = 5; // D1
 
 /*
   Init the System
@@ -43,12 +42,12 @@ boolean shiftValues[32];
 /*
   Run mode of the LED Cube
 */
-char volatile mode = '1';
+char volatile mode = '2';
 
 /*
   Main LOOP
  */
-void loop(){  
+void loop(){ 
   if (mode == 'H'){
     mode_info();
   } else if (mode == '0'){

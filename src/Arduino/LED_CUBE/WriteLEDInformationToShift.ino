@@ -38,8 +38,6 @@ void writeLED(int stage, int column, bool statusValue){
     Serial.println(column);
     Serial.print("stage value ");
     Serial.println(stage);
-    Serial.print("delay time ");
-    Serial.println(wait);
 #endif
 
   shiftValues[column] = statusValue;
