@@ -111,6 +111,7 @@ void showMatrixForTime(int timeInMilli){
         for(int i=0; i<5; i++){
             memmove(shiftValues,ledMatrix[i],32);
             writeToShift();
+
             delay(1);
         }
     }
